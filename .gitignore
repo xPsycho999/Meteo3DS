@@ -1,0 +1,26 @@
+# Build output
+build/
+*.o
+*.d
+*.elf
+*.smdh
+3ds-weather.3dsx
+3ds-wetter.3dsx
+
+# Release artifacts (attached to GitHub Releases, not committed)
+*.3dsx
+*.cia
+
+# CIA intermediates / debug dumps
+cia/*.bin
+cia/*.cxi
+cia/azahar_*.txt
+cia/cxi_*.txt
+
+# Third-party tools (download separately: makerom, bannertool)
+tools/
+
+# Local dev notes / scratch
+PLAN.md
+shots/
+NDH6SA~M
