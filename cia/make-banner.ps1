@@ -61,8 +61,8 @@ $subFont  = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontS
 $shadow   = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(170,0,0,0))
 $white    = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
 $sub      = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(220,200,224,244))
-$g.DrawString("3DS Weather", $title, $shadow, 11, 75)
-$g.DrawString("3DS Weather", $title, $white,  9,  73)
+$g.DrawString("Meteo3DS", $title, $shadow, 11, 75)
+$g.DrawString("Meteo3DS", $title, $white,  9,  73)
 $g.DrawString("Live weather | Open-Meteo", $subFont, $sub, 11, 108)
 
 $g.Dispose()

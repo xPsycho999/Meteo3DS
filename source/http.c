@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define HTTP_USER_AGENT  "3ds-wetter/0.1"
+#define HTTP_USER_AGENT  "Meteo3DS/1.0"
 #define HTTP_MAX_REDIR   5
 #define HTTP_CHUNK       (16 * 1024)
 

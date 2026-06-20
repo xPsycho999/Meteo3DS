@@ -4,7 +4,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#define CFG_DIR  "sdmc:/3ds/wetter"
+#define CFG_DIR  "sdmc:/3ds/Meteo3DS"
 #define CFG_PATH CFG_DIR "/config.json"
 
 static bool jsonNum(const char *from, const char *key, double *out) {

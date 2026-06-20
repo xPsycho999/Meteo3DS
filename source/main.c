@@ -390,7 +390,7 @@ static void renderBottom(const Forecast *fc, bool loading, float anim) {
 			default: break;
 		}
 	} else {
-		drawText(14, 12, 0.7f, white, "%s", tr("3DS Wetter", "3DS Weather"));
+		drawText(14, 12, 0.7f, white, "Meteo3DS");
 		if (g_status[0]) drawText(14, 70, 0.5f, dim, "%s", g_status);
 	}
 

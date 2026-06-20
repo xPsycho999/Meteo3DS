@@ -12,7 +12,7 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 # Project configuration
 #---------------------------------------------------------------------------------
-TARGET		:=	3ds-weather
+TARGET		:=	Meteo3DS
 BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
@@ -21,7 +21,7 @@ GRAPHICS	:=	gfx
 ROMFS		:=	romfs
 GFXBUILD	:=	$(ROMFS)/gfx
 
-APP_TITLE	:=	3DS Weather
+APP_TITLE	:=	Meteo3DS
 APP_DESCRIPTION	:=	Weather app for the 3DS (Open-Meteo)
 APP_AUTHOR	:=	xPsycho999
 

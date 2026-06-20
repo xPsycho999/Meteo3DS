@@ -3,7 +3,7 @@
 #include "i18n.h"
 #include <stdbool.h>
 
-// Persisted settings live at sdmc:/3ds/wetter/config.json:
+// Persisted settings live at sdmc:/3ds/Meteo3DS/config.json:
 //   {"active":0,"cities":[{"name":"...","lat":..,"lon":..}, ...]}
 // Old single-city files {"name","lat","lon"} are still read (migrated on save).
 

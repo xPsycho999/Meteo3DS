@@ -1,6 +1,6 @@
 BasicInfo:
-  Title                   : "3DS-WETTER"
-  ProductCode             : "CTR-H-WETR"
+  Title                   : "METEO3DS"
+  ProductCode             : "CTR-H-MTEO"
   Logo                    : Nintendo
 
 RomFs:

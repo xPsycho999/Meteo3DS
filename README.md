@@ -1,4 +1,4 @@
-# 3DS Weather
+# Meteo3DS
 
 A polished weather app for the Nintendo 3DS, written from scratch in C with
 [citro2d](https://github.com/devkitPro/citro2d). Live forecasts, animated vector
@@ -33,15 +33,15 @@ HTTP, so it works with the 3DS's outdated certificate store.
 ## Running
 
 Install the `.cia` from the [Releases](../../releases) page via FBI, or copy
-`3ds-weather.3dsx` to your SD card and launch it from the Homebrew Launcher on CFW.
-Settings and cities are stored at `sdmc:/3ds/wetter/config.json`.
+`Meteo3DS.3dsx` to your SD card and launch it from the Homebrew Launcher on CFW.
+Settings and cities are stored at `sdmc:/3ds/Meteo3DS/config.json`.
 
 ## Building
 
 Requires [devkitARM](https://devkitpro.org/) with libctru, citro2d and citro3d.
 
 ```sh
-make            # -> 3ds-weather.3dsx
+make            # -> Meteo3DS.3dsx
 ```
 
 A `.cia` can be built from the resulting `.elf` with `build-cia.ps1` (needs makerom
