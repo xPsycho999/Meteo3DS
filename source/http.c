@@ -5,6 +5,9 @@
 #define HTTP_USER_AGENT  "Meteo3DS/1.0"
 #define HTTP_MAX_REDIR   5
 #define HTTP_CHUNK       (16 * 1024)
+// Bound the connect/response wait so a dead or flaky Wi-Fi link fails in a few
+// seconds instead of blocking the worker thread on the OS default timeout.
+#define HTTP_TIMEOUT_NS  (15ULL * 1000ULL * 1000ULL * 1000ULL)   // 15 s
 
 static volatile bool s_cancel = false;
 
@@ -63,7 +66,7 @@ Result httpGet(const char *url, char **out, u32 *out_len) {
 		if (ret != 0) { httpcCloseContext(&ctx); return ret; }
 
 		u32 status = 0;
-		ret = httpcGetResponseStatusCode(&ctx, &status);
+		ret = httpcGetResponseStatusCodeTimeout(&ctx, &status, HTTP_TIMEOUT_NS);
 		if (ret != 0) { httpcCloseContext(&ctx); return ret; }
 
 		// Follow redirects.

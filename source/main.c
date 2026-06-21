@@ -22,6 +22,8 @@
 #define CITY_Y0        36
 #define CITY_ROWH      24
 
+#define APP_VERSION    "1.0.1"
+
 typedef enum { TAB_TODAY, TAB_HOURLY, TAB_DAILY, TAB_AIR, TAB_CITIES, TAB_COUNT } Tab;
 
 static City        g_cities[MAX_CITIES];
@@ -33,6 +35,7 @@ static Tab         g_tab = TAB_TODAY;
 static bool        g_unitF = false;        // false = °C, true = °F
 static bool        g_windMs = false;       // false = km/h, true = m/s
 static bool        g_settingsOpen = false;
+static bool        g_creditsOpen  = false;   // Credits sub-screen (within settings)
 
 // --- Background network worker -------------------------------------------------
 typedef enum { JOB_NONE, JOB_FETCH, JOB_SEARCH, JOB_IPADD } JobType;
@@ -172,17 +175,31 @@ static const char *weekday(long utc, long offset) {
 	return (g_lang == LANG_DE ? de : en)[idx];
 }
 
+// Wi-Fi signal indicator: three ascending bars, `strength` (0-3) of them lit.
+// (x,y) is the bottom-left of the bar group.
+static void drawWifi(float x, float y, int strength, u32 on, u32 off) {
+	for (int i = 0; i < 3; i++) {
+		float bw = 4.0f, gap = 2.0f, h = 5.0f + i * 5.0f;
+		C2D_DrawRectSolid(x + i * (bw + gap), y - h, 0.0f, bw, h, (i < strength) ? on : off);
+	}
+}
+
 // --- Top screen ----------------------------------------------------------------
 static void renderTop(const CurrentWx *wx, float anim) {
+	int wifi = (int)osGetWifiStrength();   // 0-3 bars (0 = weak/disconnected)
+	const u32 wifiOff = C2D_Color32(0xFF, 0xFF, 0xFF, 0x33);
 	const char *cityName = g_cities[g_active].name;
 
 	if (!wx->ok) {
 		drawGradient(SCREEN_TOP_W, SCREEN_H,
 			C2D_Color32(0x2b, 0x2f, 0x3a, 0xFF), C2D_Color32(0x40, 0x45, 0x52, 0xFF));
 		drawText(16, 12, 0.8f, C2D_Color32(0xFF, 0xFF, 0xFF, 0xFF), "%s", cityName);
+		drawWifi(372, 30, wifi, C2D_Color32(0xFF, 0xFF, 0xFF, 0xFF), wifiOff);
 		drawText(16, 110, 0.7f, C2D_Color32(0xFF, 0xFF, 0xFF, 0xFF), "%s", tr("Fehler:", "Error:"));
 		drawText(16, 134, 0.6f, C2D_Color32(0xCF, 0xD6, 0xE0, 0xFF),
 			"%s", wx->err[0] ? wx->err : tr("Unbekannt", "Unknown"));
+		if (wifi == 0)
+			drawText(16, 164, 0.5f, C2D_Color32(0xFF, 0xC8, 0xC8, 0xFF), "%s", tr("Kein WLAN-Signal", "No WiFi signal"));
 		drawText(16, 200, 0.5f, C2D_Color32(0xCF, 0xD6, 0xE0, 0xFF), "%s", tr("X = erneut versuchen", "X = retry"));
 		return;
 	}
@@ -193,6 +210,7 @@ static void renderTop(const CurrentWx *wx, float anim) {
 	drawText(16, 12, 0.8f, th.textPrimary, "%s", cityName);
 	if (g_nCities > 1)
 		drawText(350, 14, 0.45f, th.textSecondary, "%d/%d", g_active + 1, g_nCities);
+	drawWifi(372, 30, wifi, th.textPrimary, wifiOff);
 	iconDraw(wx->weather_code, wx->is_day, 312.0f, 92.0f, 52.0f, anim);
 
 	u32 hole = lerpColor(th.skyTop, th.skyBottom, 0.29f);
@@ -351,7 +369,6 @@ static void renderSettings(void) {
 	const u32 white  = C2D_Color32(0xFF, 0xFF, 0xFF, 0xFF);
 	const u32 faint  = C2D_Color32(0xB8, 0xC4, 0xD4, 0xFF);
 	const u32 accent = C2D_Color32(0x6f, 0xb0, 0xf0, 0xFF);
-	const u32 dim    = C2D_Color32(0x8a, 0x97, 0xa8, 0xFF);
 	const u32 pill   = C2D_Color32(0x2f, 0x80, 0xd6, 0xFF);
 
 	drawText(14, 10, 0.7f, white, "%s", tr("Einstellungen", "Settings"));
@@ -370,7 +387,32 @@ static void renderSettings(void) {
 
 	drawText(14, 152, 0.5f, accent, "%s", tr("Standort per IP hinzufügen", "Add location by IP"));
 
-	drawText(14, 188, 0.40f, dim, "%s", tr("Tippen zum Ändern  ·  SELECT schließt", "Tap to change  ·  SELECT closes"));
+	drawText(14, 182, 0.5f, accent, "%s", tr("Über / Credits", "About / Credits"));
+}
+
+static void renderCredits(void) {
+	const u32 white  = C2D_Color32(0xFF, 0xFF, 0xFF, 0xFF);
+	const u32 faint  = C2D_Color32(0xB8, 0xC4, 0xD4, 0xFF);
+	const u32 accent = C2D_Color32(0x6f, 0xb0, 0xf0, 0xFF);
+	const u32 dim    = C2D_Color32(0x8a, 0x97, 0xa8, 0xFF);
+
+	drawText(14, 8,   0.7f,  white, "Meteo3DS");
+	drawText(150, 22, 0.42f, faint, "v" APP_VERSION);
+	drawText(14, 44,  0.42f, faint, "%s", tr("Wetter-App für den 3DS", "Weather app for the 3DS"));
+
+	drawText(14, 70,   0.46f, faint, "%s", tr("Autor", "Author"));
+	drawText(110, 70,  0.46f, white, "xPsycho999");
+
+	drawText(14, 92,  0.44f, faint, "GitHub");
+	drawText(14, 110, 0.40f, accent, "github.com/xPsycho999/Meteo3DS");
+
+	drawText(14, 134,  0.46f, faint, "%s", tr("Daten", "Data"));
+	drawText(110, 134, 0.46f, white, "Open-Meteo");
+
+	drawText(14, 156,  0.46f, faint, "%s", tr("Lizenz", "License"));
+	drawText(110, 156, 0.46f, white, "GPL-3.0");
+
+	drawText(14, 188, 0.34f, dim, "%s", tr("B / Tippen = zurück", "B / tap = back"));
 }
 
 static void renderBottom(const Forecast *fc, bool loading, float anim) {
@@ -378,7 +420,8 @@ static void renderBottom(const Forecast *fc, bool loading, float anim) {
 	const u32 dim   = C2D_Color32(0x8a, 0x97, 0xa8, 0xFF);
 
 	if (g_settingsOpen) {
-		renderSettings();
+		if (g_creditsOpen) renderCredits();
+		else               renderSettings();
 	} else if (g_tab == TAB_CITIES) {
 		tabCities();
 	} else if (fc->now.ok) {
@@ -487,7 +530,8 @@ int main(int argc, char **argv) {
 		u32 kDown = hidKeysDown();
 
 		if (kDown & KEY_START) break;
-		if (kDown & KEY_SELECT) g_settingsOpen = !g_settingsOpen;
+		if (kDown & KEY_SELECT) { g_settingsOpen = !g_settingsOpen; g_creditsOpen = false; }
+		if ((kDown & KEY_B) && g_settingsOpen && g_creditsOpen) g_creditsOpen = false;
 
 		// Tab + city navigation (disabled while the settings overlay is open).
 		if (!g_settingsOpen) {
@@ -506,6 +550,9 @@ int main(int argc, char **argv) {
 			if (tp.py >= 206) {                       // tab bar
 				g_tab = (Tab)(tp.px / (320 / TAB_COUNT));
 				g_settingsOpen = false;
+				g_creditsOpen = false;
+			} else if (g_creditsOpen) {               // credits: tap anywhere returns
+				g_creditsOpen = false;
 			} else if (g_settingsOpen) {              // settings rows
 				if (tp.py >= 40 && tp.py < 68) {
 					g_unitF = !g_unitF;
@@ -520,6 +567,8 @@ int main(int argc, char **argv) {
 					g_job = JOB_IPADD;
 					g_inflight = true;
 					snprintf(g_status, sizeof(g_status), "%s", tr("Standort wird ermittelt...", "Detecting location..."));
+				} else if (tp.py >= 176 && tp.py < 205) {
+					g_creditsOpen = true;
 				}
 			} else if (g_tab == TAB_CITIES && !g_inflight) {
 				int rel = (int)tp.py - CITY_Y0;

@@ -1,6 +1,6 @@
 # Meteo3DS
 
-A polished weather app for the Nintendo 3DS, written from scratch in C with
+A polished weather app for the Nintendo 3DS, written in C with
 [citro2d](https://github.com/devkitPro/citro2d). Live forecasts, animated vector
 weather icons, air quality and pollen, and a touch-driven UI — fully bilingual
 (English / German, auto-detected from the console language).
